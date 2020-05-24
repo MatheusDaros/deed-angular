@@ -467,9 +467,9 @@ export class baseClientService {
 
 	public async studentSelfRegister(_name: string, gsn: boolean = false) {
 		const name = ethers.utils.formatBytes32String(_name);
-		const register = gsn
-			? await this.universityContractInstance.studentSelfRegisterGSN(name)
-			: await this.universityContractInstance.studentSelfRegister(name);
+		let register;
+		if (gsn) register = await this.universityContractInstance.studentSelfRegisterGSN(name);
+		else register = await this.universityContractInstance.studentSelfRegister(name);
 		return register;
 	}
 
