@@ -31,9 +31,6 @@ new mode 100755
 diff --git a/node_modules/@opengsn/gsn/contracts/StakeManager.sol b/node_modules/@opengsn/gsn/contracts/StakeManager.sol
 old mode 100644
 new mode 100755
-diff --git a/node_modules/@opengsn/gsn/contracts/TrustedBatchForwarder.sol b/node_modules/@opengsn/gsn/contracts/TrustedBatchForwarder.sol
-old mode 100644
-new mode 100755
 diff --git a/node_modules/@opengsn/gsn/contracts/TrustedForwarder.sol b/node_modules/@opengsn/gsn/contracts/TrustedForwarder.sol
 old mode 100644
 new mode 100755
@@ -63,11 +60,10 @@ old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/contracts/test/PayableWithEmit.sol b/node_modules/@opengsn/gsn/contracts/test/PayableWithEmit.sol
 deleted file mode 100644
-index 9b4515b..0000000
+index 83cf7c8..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/PayableWithEmit.sol
 +++ /dev/null
-@@ -1,30 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,29 +0,0 @@
 -pragma solidity ^0.6.2;
 -import "../../contracts/BaseRelayRecipient.sol";
 -import "../0x/LibBytesV06.sol";
@@ -99,11 +95,10 @@ index 9b4515b..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterConfigurableMisbehavior.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterConfigurableMisbehavior.sol
 deleted file mode 100644
-index 3b8225b..0000000
+index 36343eb..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterConfigurableMisbehavior.sol
 +++ /dev/null
-@@ -1,103 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,102 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
@@ -208,11 +203,10 @@ index 3b8225b..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterEverythingAccepted.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterEverythingAccepted.sol
 deleted file mode 100644
-index 8400a0b..0000000
+index e8f917a..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterEverythingAccepted.sol
 +++ /dev/null
-@@ -1,64 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,69 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
@@ -266,27 +260,32 @@ index 8400a0b..0000000
 -        emit SampleRecipientPostCall(success, gasUseWithoutPost, preRetVal);
 -    }
 -
--    function deposit() public payable {
--        require(address(relayHub) != address(0), "relay hub address not set");
--        relayHub.depositFor{value:msg.value}(address(this));
+-    // TODO: this 'overrides' existing setRelayHub method
+-    function setHub(IRelayHub _relayHub) public {
+-        relayHub = _relayHub;
 -    }
 -
--    function withdrawAll(address payable destination) public {
+-    function deposit() public payable {
+-        require(address(relayHub) != address(0), "relay hub address not set");
+-        relayHub.depositFor.value(msg.value)(address(this));
+-    }
+-
+-    function withdraw(address payable destination) public {
+-        require(address(relayHub) != address(0), "relay hub address not set");
 -        uint256 amount = relayHub.balanceOf(address(this));
--        withdrawRelayHubDepositTo(amount, destination);
+-        relayHub.withdraw(amount, destination);
 -    }
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterOwnerSignature.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterOwnerSignature.sol
 deleted file mode 100644
-index 7b3ba14..0000000
+index ca8c73f..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterOwnerSignature.sol
 +++ /dev/null
-@@ -1,32 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,31 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
--import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+-import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 -
 -import "./TestPaymasterEverythingAccepted.sol";
 -
@@ -316,11 +315,10 @@ index 7b3ba14..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterPreconfiguredApproval.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterPreconfiguredApproval.sol
 deleted file mode 100644
-index 0f8fcd7..0000000
+index e9344c2..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterPreconfiguredApproval.sol
 +++ /dev/null
-@@ -1,30 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,29 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
@@ -352,11 +350,10 @@ index 0f8fcd7..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterStoreContext.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterStoreContext.sol
 deleted file mode 100644
-index 0a6531f..0000000
+index 4f4b1ba..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterStoreContext.sol
 +++ /dev/null
-@@ -1,97 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,96 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
@@ -455,11 +452,10 @@ index 0a6531f..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterVariableGasLimits.sol b/node_modules/@opengsn/gsn/contracts/test/TestPaymasterVariableGasLimits.sol
 deleted file mode 100644
-index 86954cb..0000000
+index 16006b6..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestPaymasterVariableGasLimits.sol
 +++ /dev/null
-@@ -1,62 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,61 +0,0 @@
 -pragma solidity ^0.6.2;
 -pragma experimental ABIEncoderV2;
 -
@@ -523,17 +519,15 @@ index 86954cb..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestProxy.sol b/node_modules/@opengsn/gsn/contracts/test/TestProxy.sol
 deleted file mode 100644
-index afe0f0d..0000000
+index 4e19da6..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestProxy.sol
 +++ /dev/null
-@@ -1,35 +0,0 @@
+@@ -1,33 +0,0 @@
 -/* solhint-disable avoid-tx-origin */
--// SPDX-License-Identifier:MIT
 -pragma solidity ^0.6.2;
 -
--import "@openzeppelin/contracts/access/Ownable.sol";
--
 -import "../BaseRelayRecipient.sol";
+-import "openzeppelin-solidity/contracts/access/Ownable.sol";
 -
 -contract TestProxy is BaseRelayRecipient, Ownable  {
 -
@@ -564,12 +558,11 @@ index afe0f0d..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestRecipient.sol b/node_modules/@opengsn/gsn/contracts/test/TestRecipient.sol
 deleted file mode 100644
-index 309005f..0000000
+index ea10648..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestRecipient.sol
 +++ /dev/null
-@@ -1,57 +0,0 @@
+@@ -1,52 +0,0 @@
 -/* solhint-disable avoid-tx-origin */
--// SPDX-License-Identifier:MIT
 -pragma solidity ^0.6.2;
 -
 -import "../utils/GsnUtils.sol";
@@ -582,10 +575,6 @@ index 309005f..0000000
 -    constructor() public {
 -        //should be a singleton, since Paymaster should (eventually) trust it.
 -        trustedForwarder = address(new TrustedForwarder());
--    }
--
--    function setTrustedForwarder(address forwarder) external {
--        trustedForwarder = forwarder;
 -    }
 -
 -    event Reverting(string message);
@@ -627,11 +616,10 @@ index 309005f..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestRecipientUtils.sol b/node_modules/@opengsn/gsn/contracts/test/TestRecipientUtils.sol
 deleted file mode 100644
-index d1e43f2..0000000
+index 1565c87..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestRecipientUtils.sol
 +++ /dev/null
-@@ -1,33 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,32 +0,0 @@
 -pragma solidity ^0.6.2;
 -
 -import "../utils/GsnUtils.sol";
@@ -666,15 +654,14 @@ index d1e43f2..0000000
 -}
 diff --git a/node_modules/@opengsn/gsn/contracts/test/TestUniswap.sol b/node_modules/@opengsn/gsn/contracts/test/TestUniswap.sol
 deleted file mode 100644
-index 49787eb..0000000
+index 76e0720..0000000
 --- a/node_modules/@opengsn/gsn/contracts/test/TestUniswap.sol
 +++ /dev/null
-@@ -1,66 +0,0 @@
--// SPDX-License-Identifier:MIT
+@@ -1,65 +0,0 @@
 -pragma solidity ^0.6.2;
 -
--import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
--import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 -import "../paymaster/IUniswap.sol";
 -
 -contract TestToken is ERC20("Test Token", "TOK") {
@@ -958,16 +945,61 @@ new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/PingResponse.js.map b/node_modules/@opengsn/gsn/dist/src/common/PingResponse.js.map
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.d.ts b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.js b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.js.map b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.js.map
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.json b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IPaymaster.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.d.ts b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.js b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.js.map b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.js.map
 old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.json b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayHub.json
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.d.ts b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.js b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.js.map b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.js.map
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.json b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IRelayRecipient.json
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.d.ts b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.js b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.js.map b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.js.map
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.json b/node_modules/@opengsn/gsn/dist/src/common/interfaces/IStakeManager.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.d.ts b/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.js b/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.js.map b/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.js.map
 old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.json b/node_modules/@opengsn/gsn/dist/src/common/interfaces/ITrustedForwarder.json
@@ -1234,6 +1266,4875 @@ new mode 100755
 diff --git a/node_modules/@opengsn/gsn/dist/src/webtools/webtools.js.map b/node_modules/@opengsn/gsn/dist/src/webtools/webtools.js.map
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/dist/types/index.d.ts b/node_modules/@opengsn/gsn/dist/types/index.d.ts
+new file mode 100755
+index 0000000..5aec39b
+--- /dev/null
++++ b/node_modules/@opengsn/gsn/dist/types/index.d.ts
+@@ -0,0 +1,4784 @@
++/* Generated by ts-generator ver. 0.0.8 */
++/* tslint:disable */
++
++/// <reference types="@openeth/truffle-typings" />
++import BN from "bn.js";
++
++export interface BasePaymasterContract
++  extends Truffle.Contract<BasePaymasterInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<BasePaymasterInstance>;
++}
++
++export interface BaseRelayRecipientContract
++  extends Truffle.Contract<BaseRelayRecipientInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<BaseRelayRecipientInstance>;
++}
++
++export interface EIP712SigContract extends Truffle.Contract<EIP712SigInstance> {
++  "new"(
++    verifier: string | BN,
++    meta?: Truffle.TransactionDetails
++  ): Promise<EIP712SigInstance>;
++}
++
++export interface ERC20Contract extends Truffle.Contract<ERC20Instance> {
++  "new"(
++    name: string,
++    symbol: string,
++    meta?: Truffle.TransactionDetails
++  ): Promise<ERC20Instance>;
++}
++
++export interface IERC20Contract extends Truffle.Contract<IERC20Instance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IERC20Instance>;
++}
++
++export interface IPaymasterContract
++  extends Truffle.Contract<IPaymasterInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IPaymasterInstance>;
++}
++
++export interface IRelayHubContract extends Truffle.Contract<IRelayHubInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IRelayHubInstance>;
++}
++
++export interface IRelayRecipientContract
++  extends Truffle.Contract<IRelayRecipientInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IRelayRecipientInstance>;
++}
++
++export interface IStakeManagerContract
++  extends Truffle.Contract<IStakeManagerInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IStakeManagerInstance>;
++}
++
++export interface ITrustedForwarderContract
++  extends Truffle.Contract<ITrustedForwarderInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<ITrustedForwarderInstance>;
++}
++
++export interface IUniswapContract extends Truffle.Contract<IUniswapInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<IUniswapInstance>;
++}
++
++export interface MigrationsContract
++  extends Truffle.Contract<MigrationsInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<MigrationsInstance>;
++}
++
++export interface OwnableContract extends Truffle.Contract<OwnableInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<OwnableInstance>;
++}
++
++export interface PayableWithEmitContract
++  extends Truffle.Contract<PayableWithEmitInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<PayableWithEmitInstance>;
++}
++
++export interface PenalizerContract extends Truffle.Contract<PenalizerInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<PenalizerInstance>;
++}
++
++export interface RelayHubContract extends Truffle.Contract<RelayHubInstance> {
++  "new"(
++    _gtxdatanonzero: number | BN | string,
++    _stakeManager: string | BN,
++    _penalizer: string | BN,
++    meta?: Truffle.TransactionDetails
++  ): Promise<RelayHubInstance>;
++}
++
++export interface StakeManagerContract
++  extends Truffle.Contract<StakeManagerInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<StakeManagerInstance>;
++}
++
++export interface TestPaymasterConfigurableMisbehaviorContract
++  extends Truffle.Contract<TestPaymasterConfigurableMisbehaviorInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterConfigurableMisbehaviorInstance>;
++}
++
++export interface TestPaymasterEverythingAcceptedContract
++  extends Truffle.Contract<TestPaymasterEverythingAcceptedInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterEverythingAcceptedInstance>;
++}
++
++export interface TestPaymasterOwnerSignatureContract
++  extends Truffle.Contract<TestPaymasterOwnerSignatureInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterOwnerSignatureInstance>;
++}
++
++export interface TestPaymasterPreconfiguredApprovalContract
++  extends Truffle.Contract<TestPaymasterPreconfiguredApprovalInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterPreconfiguredApprovalInstance>;
++}
++
++export interface TestPaymasterStoreContextContract
++  extends Truffle.Contract<TestPaymasterStoreContextInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterStoreContextInstance>;
++}
++
++export interface TestPaymasterVariableGasLimitsContract
++  extends Truffle.Contract<TestPaymasterVariableGasLimitsInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestPaymasterVariableGasLimitsInstance>;
++}
++
++export interface TestProxyContract extends Truffle.Contract<TestProxyInstance> {
++  "new"(
++    forwarder: string | BN,
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestProxyInstance>;
++}
++
++export interface TestRecipientContract
++  extends Truffle.Contract<TestRecipientInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<TestRecipientInstance>;
++}
++
++export interface TestRecipientUtilsContract
++  extends Truffle.Contract<TestRecipientUtilsInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<TestRecipientUtilsInstance>;
++}
++
++export interface TestTokenContract extends Truffle.Contract<TestTokenInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<TestTokenInstance>;
++}
++
++export interface TestUniswapContract
++  extends Truffle.Contract<TestUniswapInstance> {
++  "new"(
++    _rateMult: number | BN | string,
++    _rateDiv: number | BN | string,
++    meta?: Truffle.TransactionDetails
++  ): Promise<TestUniswapInstance>;
++}
++
++export interface TokenGasCalculatorContract
++  extends Truffle.Contract<TokenGasCalculatorInstance> {
++  "new"(
++    _gtxdatanonzero: number | BN | string,
++    _stakeManager: string | BN,
++    _penalizer: string | BN,
++    meta?: Truffle.TransactionDetails
++  ): Promise<TokenGasCalculatorInstance>;
++}
++
++export interface TokenPaymasterContract
++  extends Truffle.Contract<TokenPaymasterInstance> {
++  "new"(
++    _uniswap: string | BN,
++    meta?: Truffle.TransactionDetails
++  ): Promise<TokenPaymasterInstance>;
++}
++
++export interface TrustedBatchForwarderContract
++  extends Truffle.Contract<TrustedBatchForwarderInstance> {
++  "new"(
++    meta?: Truffle.TransactionDetails
++  ): Promise<TrustedBatchForwarderInstance>;
++}
++
++export interface TrustedForwarderContract
++  extends Truffle.Contract<TrustedForwarderInstance> {
++  "new"(meta?: Truffle.TransactionDetails): Promise<TrustedForwarderInstance>;
++}
++
++export interface BasePaymasterInstance extends Truffle.ContractInstance {
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleGas: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface BaseRelayRecipientInstance extends Truffle.ContractInstance {
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++}
++
++export interface EIP712SigInstance extends Truffle.ContractInstance {
++  CALLDATA_TYPEHASH(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  DOMAIN_SEPARATOR(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  EIP712DOMAIN_TYPEHASH(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  RELAYDATA_TYPEHASH(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  RELAY_REQUEST_TYPEHASH(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  verify(
++    req: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    signature: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++}
++
++export interface ERC20Instance extends Truffle.ContractInstance {
++  name(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  balanceOf(
++    account: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  transfer: {
++    (
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  allowance(
++    owner: string | BN,
++    spender: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  approve: {
++    (
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferFrom: {
++    (
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  increaseAllowance: {
++    (
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  decreaseAllowance: {
++    (
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface IERC20Instance extends Truffle.ContractInstance {
++  totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  balanceOf(
++    account: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  transfer: {
++    (
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  allowance(
++    owner: string | BN,
++    spender: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  approve: {
++    (
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferFrom: {
++    (
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface IPaymasterInstance extends Truffle.ContractInstance {
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleGas: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface IRelayHubInstance extends Truffle.ContractInstance {
++  getStakeManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  addRelayWorkers: {
++    (
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  registerRelayServer: {
++    (
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  depositFor: {
++    (target: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  balanceOf(
++    target: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  withdraw: {
++    (
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  canRelay(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    maxPossibleGas: number | BN | string,
++    acceptRelayedCallGasLimit: number | BN | string,
++    signature: string,
++    approvalData: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<[boolean, string]>;
++
++  relayCall: {
++    (
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  penalize: {
++    (
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getHubOverhead(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  calculateCharge(
++    gasUsed: number | BN | string,
++    gasData: {
++      gasLimit: number | BN | string;
++      gasPrice: number | BN | string;
++      pctRelayFee: number | BN | string;
++      baseRelayFee: number | BN | string;
++    },
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  getVersion(txDetails?: Truffle.TransactionDetails): Promise<string>;
++}
++
++export interface IRelayRecipientInstance extends Truffle.ContractInstance {
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++}
++
++export interface IStakeManagerInstance extends Truffle.ContractInstance {
++  stakeForAddress: {
++    (
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  unlockStake: {
++    (
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawStake: {
++    (
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  authorizeHub: {
++    (
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  unauthorizeHub: {
++    (
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  isRelayManagerStaked(
++    relayManager: string | BN,
++    minAmount: number | BN | string,
++    minUnstakeDelay: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++
++  penalizeRelayManager: {
++    (
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getStakeInfo(
++    relayManager: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    stake: string;
++    unstakeDelay: string;
++    withdrawBlock: string;
++    owner: string;
++  }>;
++}
++
++export interface ITrustedForwarderInstance extends Truffle.ContractInstance {
++  verify(
++    req: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    sig: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<void>;
++
++  verifyAndCall: {
++    (
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<[boolean, string]>;
++    sendTransaction(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getNonce(
++    from: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++}
++
++export interface IUniswapInstance extends Truffle.ContractInstance {
++  tokenAddress(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  tokenToEthSwapOutput: {
++    (
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  tokenToEthTransferOutput: {
++    (
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getTokenToEthOutputPrice(
++    ethBought: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  getTokenToEthInputPrice(
++    tokensSold: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++}
++
++export interface MigrationsInstance extends Truffle.ContractInstance {
++  last_completed_migration(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  setCompleted: {
++    (
++      completed: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      completed: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      completed: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      completed: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  upgrade: {
++    (newAddress: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newAddress: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newAddress: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newAddress: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface OwnableInstance extends Truffle.ContractInstance {
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface PayableWithEmitInstance extends Truffle.ContractInstance {
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  doSend: {
++    (target: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface PenalizerInstance extends Truffle.ContractInstance {
++  penalizeRepeatedNonce: {
++    (
++      unsignedTx1: string,
++      signature1: string,
++      unsignedTx2: string,
++      signature2: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      unsignedTx1: string,
++      signature1: string,
++      unsignedTx2: string,
++      signature2: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      unsignedTx1: string,
++      signature1: string,
++      unsignedTx2: string,
++      signature2: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      unsignedTx1: string,
++      signature1: string,
++      unsignedTx2: string,
++      signature2: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  penalizeIllegalTransaction: {
++    (
++      unsignedTx: string,
++      signature: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      unsignedTx: string,
++      signature: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      unsignedTx: string,
++      signature: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      unsignedTx: string,
++      signature: string,
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface RelayHubInstance extends Truffle.ContractInstance {
++  COMMIT_ID(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  GTRANSACTION(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  MAX_WORKER_COUNT(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  eip712sig(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  gtxdatanonzero(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  penalizer(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  stakeManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  version(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getHubOverhead(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  getVersion(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getStakeManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  registerRelayServer: {
++    (
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  addRelayWorkers: {
++    (
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  depositFor: {
++    (target: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  balanceOf(
++    target: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  withdraw: {
++    (
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  canRelay(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    maxPossibleGas: number | BN | string,
++    acceptRelayedCallGasLimit: number | BN | string,
++    signature: string,
++    approvalData: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<[boolean, string]>;
++
++  relayCall: {
++    (
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  recipientCallsAtomic: {
++    (
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  calculateCharge(
++    gasUsed: number | BN | string,
++    gasData: {
++      gasLimit: number | BN | string;
++      gasPrice: number | BN | string;
++      pctRelayFee: number | BN | string;
++      baseRelayFee: number | BN | string;
++    },
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  penalize: {
++    (
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface StakeManagerInstance extends Truffle.ContractInstance {
++  authorizedHubs(
++    arg0: string | BN,
++    arg1: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  stakes(
++    arg0: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<[BN, BN, BN, string]>;
++
++  getStakeInfo(
++    relayManager: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    stake: string;
++    unstakeDelay: string;
++    withdrawBlock: string;
++    owner: string;
++  }>;
++
++  stakeForAddress: {
++    (
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      unstakeDelay: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  unlockStake: {
++    (
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawStake: {
++    (
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  authorizeHub: {
++    (
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  unauthorizeHub: {
++    (
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      relayHub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  isRelayManagerStaked(
++    relayManager: string | BN,
++    minAmount: number | BN | string,
++    minUnstakeDelay: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++
++  penalizeRelayManager: {
++    (
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayManager: string | BN,
++      beneficiary: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestPaymasterConfigurableMisbehaviorInstance
++  extends Truffle.ContractInstance {
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  overspendAcceptGas(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  returnInvalidErrorCode(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++
++  revertPostRelayCall(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
++
++  revertPreRelayCall(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawDuringPostRelayedCall(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++
++  withdrawDuringPreRelayedCall(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<boolean>;
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setWithdrawDuringPostRelayedCall: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setWithdrawDuringPreRelayedCall: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setReturnInvalidErrorCode: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setRevertPostRelayCall: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setRevertPreRelayCall: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setOverspendAcceptGas: {
++    (val: boolean, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: boolean, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: boolean,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleCharge: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAllBalance: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++}
++
++export interface TestPaymasterEverythingAcceptedInstance
++  extends Truffle.ContractInstance {
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleCharge: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestPaymasterOwnerSignatureInstance
++  extends Truffle.ContractInstance {
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleCharge: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++}
++
++export interface TestPaymasterPreconfiguredApprovalInstance
++  extends Truffle.ContractInstance {
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  expectedApprovalData(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setExpectedApprovalData: {
++    (val: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(val: string, txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(
++      val: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      val: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleCharge: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++}
++
++export interface TestPaymasterStoreContextInstance
++  extends Truffle.ContractInstance {
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleGas: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestPaymasterVariableGasLimitsInstance
++  extends Truffle.ContractInstance {
++  deposit: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAll: {
++    (destination: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      destination: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleGas: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestProxyInstance extends Truffle.ContractInstance {
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
++
++  test: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  execute: {
++    (
++      target: string | BN,
++      func: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      target: string | BN,
++      func: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      target: string | BN,
++      func: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      target: string | BN,
++      func: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestRecipientInstance extends Truffle.ContractInstance {
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  paymaster(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  setTrustedForwarder: {
++    (forwarder: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      forwarder: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      forwarder: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      forwarder: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  testRevert: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setWithdrawDuringRelayedCall: {
++    (_paymaster: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      _paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      _paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      _paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  emitMessage: {
++    (message: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  withdrawAllBalance: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  dontEmitMessage: {
++    (message: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      message: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  emitMessageNoParams: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++}
++
++export interface TestRecipientUtilsInstance extends Truffle.ContractInstance {
++  testFunc: {
++    (
++      arg0: number | BN | string,
++      arg1: string,
++      arg2: number | BN | string,
++      arg3: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      arg0: number | BN | string,
++      arg1: string,
++      arg2: number | BN | string,
++      arg3: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      arg0: number | BN | string,
++      arg1: string,
++      arg2: number | BN | string,
++      arg3: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      arg0: number | BN | string,
++      arg1: string,
++      arg2: number | BN | string,
++      arg3: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getParam(
++    msgData: string,
++    index: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  getMethodSig(
++    msgData: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  getBytesParam(
++    msgData: string,
++    index: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  getStringParam(
++    msgData: string,
++    index: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++}
++
++export interface TestTokenInstance extends Truffle.ContractInstance {
++  allowance(
++    owner: string | BN,
++    spender: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  approve: {
++    (
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  balanceOf(
++    account: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  decreaseAllowance: {
++    (
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      subtractedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  increaseAllowance: {
++    (
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      spender: string | BN,
++      addedValue: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  name(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  transfer: {
++    (
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  transferFrom: {
++    (
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<boolean>;
++    sendTransaction(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      sender: string | BN,
++      recipient: string | BN,
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  mint: {
++    (
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TestUniswapInstance extends Truffle.ContractInstance {
++  rateDiv(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  rateMult(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  tokenAddress(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  tokenToEthSwapOutput: {
++    (
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getTokenToEthInputPrice(
++    tokensSold: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  tokenToEthTransferOutput: {
++    (
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      ethBought: number | BN | string,
++      maxTokens: number | BN | string,
++      deadline: number | BN | string,
++      recipient: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getTokenToEthOutputPrice(
++    ethBought: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++}
++
++export interface TokenGasCalculatorInstance extends Truffle.ContractInstance {
++  COMMIT_ID(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  GTRANSACTION(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  MAX_WORKER_COUNT(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  addRelayWorkers: {
++    (
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newRelayWorkers: (string | BN)[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  balanceOf(
++    target: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  calculateCharge(
++    gasUsed: number | BN | string,
++    gasData: {
++      gasLimit: number | BN | string;
++      gasPrice: number | BN | string;
++      pctRelayFee: number | BN | string;
++      baseRelayFee: number | BN | string;
++    },
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  canRelay(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    maxPossibleGas: number | BN | string,
++    acceptRelayedCallGasLimit: number | BN | string,
++    signature: string,
++    approvalData: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<[boolean, string]>;
++
++  depositFor: {
++    (target: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  eip712sig(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getHubOverhead(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  getStakeManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getVersion(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  gtxdatanonzero(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  penalize: {
++    (
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayWorker: string | BN,
++      beneficiary: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  penalizer(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  recipientCallsAtomic: {
++    (
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<BN>;
++    sendTransaction(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      gasLimits: {
++        acceptRelayedCallGasLimit: number | BN | string;
++        preRelayedCallGasLimit: number | BN | string;
++        postRelayedCallGasLimit: number | BN | string;
++      },
++      totalInitialGas: number | BN | string,
++      calldataGas: number | BN | string,
++      recipientContext: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  registerRelayServer: {
++    (
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      baseRelayFee: number | BN | string,
++      pctRelayFee: number | BN | string,
++      url: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  relayCall: {
++    (
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      relayRequest: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      signature: string,
++      approvalData: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  stakeManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  version(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  withdraw: {
++    (
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      dest: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  calculatePostGas: {
++    (paymaster: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<[BN, BN]>;
++    sendTransaction(
++      paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      paymaster: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TokenPaymasterInstance extends Truffle.ContractInstance {
++  gasUsedByPostWithPreCharge(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  gasUsedByPostWithoutPreCharge(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  getGasLimits(
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<{
++    acceptRelayedCallGasLimit: string;
++    preRelayedCallGasLimit: string;
++    postRelayedCallGasLimit: string;
++  }>;
++
++  getHubAddr(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  getRelayHubDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
++
++  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  renounceOwnership: {
++    (txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
++    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
++    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
++  };
++
++  setRelayHub: {
++    (hub: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      hub: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  transferOwnership: {
++    (newOwner: string | BN, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      newOwner: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  uniswap(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  withdrawRelayHubDepositTo: {
++    (
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      amount: number | BN | string,
++      target: string | BN,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  setPostGasUsage: {
++    (
++      _gasUsedByPostWithPreCharge: number | BN | string,
++      _gasUsedByPostWithoutPreCharge: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      _gasUsedByPostWithPreCharge: number | BN | string,
++      _gasUsedByPostWithoutPreCharge: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      _gasUsedByPostWithPreCharge: number | BN | string,
++      _gasUsedByPostWithoutPreCharge: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      _gasUsedByPostWithPreCharge: number | BN | string,
++      _gasUsedByPostWithoutPreCharge: number | BN | string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  getPayer(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  acceptRelayedCall(
++    relayRequest: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    approvalData: string,
++    maxPossibleGas: number | BN | string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<string>;
++
++  preRelayedCall: {
++    (context: string, txDetails?: Truffle.TransactionDetails): Promise<
++      Truffle.TransactionResponse
++    >;
++    call(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    sendTransaction(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  postRelayedCall: {
++    (
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      context: string,
++      success: boolean,
++      preRetVal: string | BN,
++      gasUseWithoutPost: number | BN | string,
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      },
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TrustedBatchForwarderInstance
++  extends Truffle.ContractInstance {
++  getNonce(
++    from: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  getTrustedForwarder(txDetails?: Truffle.TransactionDetails): Promise<string>;
++
++  verify(
++    req: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    sig: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<void>;
++
++  verifyAndCall: {
++    (
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<[boolean, string]>;
++    sendTransaction(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++
++  sendBatch: {
++    (
++      targets: (string | BN)[],
++      encodedFunctions: string[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      targets: (string | BN)[],
++      encodedFunctions: string[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<void>;
++    sendTransaction(
++      targets: (string | BN)[],
++      encodedFunctions: string[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      targets: (string | BN)[],
++      encodedFunctions: string[],
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
++
++export interface TrustedForwarderInstance extends Truffle.ContractInstance {
++  getNonce(
++    from: string | BN,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<BN>;
++
++  verify(
++    req: {
++      target: string | BN;
++      encodedFunction: string;
++      gasData: {
++        gasLimit: number | BN | string;
++        gasPrice: number | BN | string;
++        pctRelayFee: number | BN | string;
++        baseRelayFee: number | BN | string;
++      };
++      relayData: {
++        senderAddress: string | BN;
++        senderNonce: number | BN | string;
++        relayWorker: string | BN;
++        paymaster: string | BN;
++      };
++    },
++    sig: string,
++    txDetails?: Truffle.TransactionDetails
++  ): Promise<void>;
++
++  verifyAndCall: {
++    (
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<Truffle.TransactionResponse>;
++    call(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<[boolean, string]>;
++    sendTransaction(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<string>;
++    estimateGas(
++      req: {
++        target: string | BN;
++        encodedFunction: string;
++        gasData: {
++          gasLimit: number | BN | string;
++          gasPrice: number | BN | string;
++          pctRelayFee: number | BN | string;
++          baseRelayFee: number | BN | string;
++        };
++        relayData: {
++          senderAddress: string | BN;
++          senderNonce: number | BN | string;
++          relayWorker: string | BN;
++          paymaster: string | BN;
++        };
++      },
++      sig: string,
++      txDetails?: Truffle.TransactionDetails
++    ): Promise<number>;
++  };
++}
+diff --git a/node_modules/@opengsn/gsn/dist/types/merge.d.ts b/node_modules/@opengsn/gsn/dist/types/merge.d.ts
+new file mode 100755
+index 0000000..dab675f
+--- /dev/null
++++ b/node_modules/@opengsn/gsn/dist/types/merge.d.ts
+@@ -0,0 +1,73 @@
++/* Generated by ts-generator ver. 0.0.8 */
++/* tslint:disable */
++
++/// <reference types="@openeth/truffle-typings" />
++
++import * as TruffleContracts from ".";
++
++declare global {
++  namespace Truffle {
++    interface Artifacts {
++      require(name: "BasePaymaster"): TruffleContracts.BasePaymasterContract;
++      require(
++        name: "BaseRelayRecipient"
++      ): TruffleContracts.BaseRelayRecipientContract;
++      require(name: "EIP712Sig"): TruffleContracts.EIP712SigContract;
++      require(name: "ERC20"): TruffleContracts.ERC20Contract;
++      require(name: "IERC20"): TruffleContracts.IERC20Contract;
++      require(name: "IPaymaster"): TruffleContracts.IPaymasterContract;
++      require(name: "IRelayHub"): TruffleContracts.IRelayHubContract;
++      require(
++        name: "IRelayRecipient"
++      ): TruffleContracts.IRelayRecipientContract;
++      require(name: "IStakeManager"): TruffleContracts.IStakeManagerContract;
++      require(
++        name: "ITrustedForwarder"
++      ): TruffleContracts.ITrustedForwarderContract;
++      require(name: "IUniswap"): TruffleContracts.IUniswapContract;
++      require(name: "Migrations"): TruffleContracts.MigrationsContract;
++      require(name: "Ownable"): TruffleContracts.OwnableContract;
++      require(
++        name: "PayableWithEmit"
++      ): TruffleContracts.PayableWithEmitContract;
++      require(name: "Penalizer"): TruffleContracts.PenalizerContract;
++      require(name: "RelayHub"): TruffleContracts.RelayHubContract;
++      require(name: "StakeManager"): TruffleContracts.StakeManagerContract;
++      require(
++        name: "TestPaymasterConfigurableMisbehavior"
++      ): TruffleContracts.TestPaymasterConfigurableMisbehaviorContract;
++      require(
++        name: "TestPaymasterEverythingAccepted"
++      ): TruffleContracts.TestPaymasterEverythingAcceptedContract;
++      require(
++        name: "TestPaymasterOwnerSignature"
++      ): TruffleContracts.TestPaymasterOwnerSignatureContract;
++      require(
++        name: "TestPaymasterPreconfiguredApproval"
++      ): TruffleContracts.TestPaymasterPreconfiguredApprovalContract;
++      require(
++        name: "TestPaymasterStoreContext"
++      ): TruffleContracts.TestPaymasterStoreContextContract;
++      require(
++        name: "TestPaymasterVariableGasLimits"
++      ): TruffleContracts.TestPaymasterVariableGasLimitsContract;
++      require(name: "TestProxy"): TruffleContracts.TestProxyContract;
++      require(name: "TestRecipient"): TruffleContracts.TestRecipientContract;
++      require(
++        name: "TestRecipientUtils"
++      ): TruffleContracts.TestRecipientUtilsContract;
++      require(name: "TestToken"): TruffleContracts.TestTokenContract;
++      require(name: "TestUniswap"): TruffleContracts.TestUniswapContract;
++      require(
++        name: "TokenGasCalculator"
++      ): TruffleContracts.TokenGasCalculatorContract;
++      require(name: "TokenPaymaster"): TruffleContracts.TokenPaymasterContract;
++      require(
++        name: "TrustedBatchForwarder"
++      ): TruffleContracts.TrustedBatchForwarderContract;
++      require(
++        name: "TrustedForwarder"
++      ): TruffleContracts.TrustedForwarderContract;
++    }
++  }
++}
 diff --git a/node_modules/@opengsn/gsn/dist/types/truffle-contracts/index.d.ts b/node_modules/@opengsn/gsn/dist/types/truffle-contracts/index.d.ts
 new file mode 100755
 index 0000000..5aec39b
@@ -6148,16 +11049,31 @@ new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/PingResponse.ts b/node_modules/@opengsn/gsn/src/common/PingResponse.ts
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IPaymaster.js b/node_modules/@opengsn/gsn/src/common/interfaces/IPaymaster.js
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IPaymaster.json b/node_modules/@opengsn/gsn/src/common/interfaces/IPaymaster.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IRelayHub.js b/node_modules/@opengsn/gsn/src/common/interfaces/IRelayHub.js
 old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IRelayHub.json b/node_modules/@opengsn/gsn/src/common/interfaces/IRelayHub.json
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IRelayRecipient.js b/node_modules/@opengsn/gsn/src/common/interfaces/IRelayRecipient.js
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IRelayRecipient.json b/node_modules/@opengsn/gsn/src/common/interfaces/IRelayRecipient.json
 old mode 100644
 new mode 100755
+diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IStakeManager.js b/node_modules/@opengsn/gsn/src/common/interfaces/IStakeManager.js
+old mode 100644
+new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/IStakeManager.json b/node_modules/@opengsn/gsn/src/common/interfaces/IStakeManager.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/ITrustedForwarder.js b/node_modules/@opengsn/gsn/src/common/interfaces/ITrustedForwarder.js
 old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/common/interfaces/ITrustedForwarder.json b/node_modules/@opengsn/gsn/src/common/interfaces/ITrustedForwarder.json
@@ -6223,16 +11139,16 @@ new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/relayclient/types/TmpRelayTransactionJsonRequest.ts b/node_modules/@opengsn/gsn/src/relayclient/types/TmpRelayTransactionJsonRequest.ts
 old mode 100644
 new mode 100755
-diff --git a/node_modules/@opengsn/gsn/src/relayserver/HttpServer.ts b/node_modules/@opengsn/gsn/src/relayserver/HttpServer.ts
+diff --git a/node_modules/@opengsn/gsn/src/relayserver/HttpServer.js b/node_modules/@opengsn/gsn/src/relayserver/HttpServer.js
 old mode 100644
 new mode 100755
-diff --git a/node_modules/@opengsn/gsn/src/relayserver/KeyManager.ts b/node_modules/@opengsn/gsn/src/relayserver/KeyManager.ts
+diff --git a/node_modules/@opengsn/gsn/src/relayserver/KeyManager.js b/node_modules/@opengsn/gsn/src/relayserver/KeyManager.js
 old mode 100644
 new mode 100755
-diff --git a/node_modules/@opengsn/gsn/src/relayserver/RelayServer.ts b/node_modules/@opengsn/gsn/src/relayserver/RelayServer.ts
+diff --git a/node_modules/@opengsn/gsn/src/relayserver/RelayServer.js b/node_modules/@opengsn/gsn/src/relayserver/RelayServer.js
 old mode 100644
 new mode 100755
-diff --git a/node_modules/@opengsn/gsn/src/relayserver/TxStoreManager.ts b/node_modules/@opengsn/gsn/src/relayserver/TxStoreManager.ts
+diff --git a/node_modules/@opengsn/gsn/src/relayserver/TxStoreManager.js b/node_modules/@opengsn/gsn/src/relayserver/TxStoreManager.js
 old mode 100644
 new mode 100755
 diff --git a/node_modules/@opengsn/gsn/src/webtools/contractmanager.js b/node_modules/@opengsn/gsn/src/webtools/contractmanager.js

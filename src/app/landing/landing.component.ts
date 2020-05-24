@@ -81,6 +81,7 @@ export class LandingComponent implements OnInit {
 			methodSuffix: '_v4',
 			jsonStringifyRequest: true,
 			chainId: 3,
+			verbose:true,
 		};
 		const gsnProvider = new RelayProvider(
 			this.globals.service.portis.provider,
